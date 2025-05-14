@@ -134,3 +134,29 @@ app.get("/getUsers", async (req, res) => {
     res.status(500).send("Failed to fetch users");
   }
 });
+
+app.get("/getExternalUsers/:empID", async (req, res) => {
+  const empID = req.params.empID;
+  try {
+    const pool = await getConnection();
+    const result = await pool.request().query(`
+      SELECT 
+        EmployeeID, 
+        FirstName + ' ' + LastName AS name, 
+        JobTitle, 
+        Department, 
+        CAST('Bonchon1234' AS VARCHAR(MAX)) AS [Password], 
+        CAST('2' AS INT) AS account_type
+      FROM SCFHPAYROLL.PAYROLL.dbo.vw_EmpListActive AS vw_EmpListActive_1
+      WHERE 
+        EmpStatus = '30' 
+        AND Company = '100' 
+        AND DeptID IN ('HR', 'IT', 'CA', 'MK', 'AC')
+        AND EmployeeID = @empID
+    `);
+    res.json(result.recordset);
+  } catch (err) {
+    console.error("Failed to fetch external users:", err);
+    res.status(500).send("Failed to fetch external users");
+  }
+});

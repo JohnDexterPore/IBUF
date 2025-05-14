@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-
+import Modal from "./Modal";
 function Users() {
   const [fetchUsers, setFetchUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false); // Modal visibility state
 
   useEffect(() => {
     axios
@@ -26,12 +27,19 @@ function Users() {
       .includes(searchTerm.toLowerCase())
   );
 
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
   return (
-    <div className="w-full h-full">
-      <div className="mb-10 flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Users</h1>
+    <div className="w-full h-full flex gap-10 flex-col">
+      <div className="flex items-center justify-between h-1/12">
+        <h1 className="text-3xl font-bold">Users</h1>
         <div className="flex gap-5">
-          <button className="text-white font-bold px-5 py-3 rounded-4xl bg-green-500">
+          <button
+            onClick={openModal}
+            className="text-white font-bold px-5 py-3 rounded-4xl bg-green-500"
+          >
             Add User
           </button>
           <input
@@ -44,7 +52,7 @@ function Users() {
         </div>
       </div>
 
-      <div className="w-full overflow-auto h-full">
+      <div className="w-full overflow-auto h-11/12">
         <table className="min-w-full border border-gray-200 shadow-md rounded-md">
           <thead className="bg-gray-800 text-white sticky top-0">
             <tr>
@@ -123,6 +131,7 @@ function Users() {
           </tbody>
         </table>
       </div>
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </div>
   );
 }
