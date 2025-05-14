@@ -49,15 +49,30 @@ const Modal = ({ isOpen, onClose }) => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div className="flex flex-col">
               <label
-                htmlFor="fullName"
+                htmlFor="firstName"
                 className="mb-1 text-sm font-medium text-gray-700"
               >
-                Full Name
+                First Name
               </label>
               <input
-                id="fullName"
+                id="firstName"
                 type="text"
-                placeholder="Enter full name"
+                placeholder="Enter first name"
+                className="w-full border border-gray-300 rounded-md px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <div className="flex flex-col">
+              <label
+                htmlFor="lastName"
+                className="mb-1 text-sm font-medium text-gray-700"
+              >
+                Last Name
+              </label>
+              <input
+                id="lastName"
+                type="text"
+                placeholder="Enter last name"
                 className="w-full border border-gray-300 rounded-md px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
@@ -79,6 +94,42 @@ const Modal = ({ isOpen, onClose }) => {
 
             <div className="flex flex-col">
               <label
+                htmlFor="department"
+                className="mb-1 text-sm font-medium text-gray-700"
+              >
+                Department
+              </label>
+              <input
+                id="department"
+                type="text"
+                placeholder="Enter department"
+                className="w-full border border-gray-300 rounded-md px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <div className="flex flex-col">
+              <label
+                htmlFor="accountType"
+                className="mb-1 text-sm font-medium text-gray-700"
+              >
+                Account Type
+              </label>
+              <select
+                id="accountType"
+                className="w-full border border-gray-300 rounded-md px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                defaultValue=""
+              >
+                <option value="" disabled>
+                  Select Account Type
+                </option>
+                <option value="0">Admin</option>
+                <option value="1">Approver</option>
+                <option value="2">User</option>
+              </select>
+            </div>
+
+            <div className="flex flex-col">
+              <label
                 htmlFor="email"
                 className="mb-1 text-sm font-medium text-gray-700"
               >
@@ -88,21 +139,6 @@ const Modal = ({ isOpen, onClose }) => {
                 id="email"
                 type="email"
                 placeholder="Enter email"
-                className="w-full border border-gray-300 rounded-md px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-
-            <div className="flex flex-col">
-              <label
-                htmlFor="phone"
-                className="mb-1 text-sm font-medium text-gray-700"
-              >
-                Phone Number
-              </label>
-              <input
-                id="phone"
-                type="text"
-                placeholder="Enter phone number"
                 className="w-full border border-gray-300 rounded-md px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>

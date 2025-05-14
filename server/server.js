@@ -126,7 +126,7 @@ app.get("/getUsers", async (req, res) => {
   try {
     const pool = await getConnection();
     const result = await pool.request().query(`
-      SELECT * FROM [Item_Buildup].[dbo].[mtbl_users] ORDER BY Name
+      SELECT * FROM [Item_Buildup].[dbo].[mtbl_users] ORDER BY FirstName
     `);
     res.json(result.recordset);
   } catch (err) {
@@ -181,5 +181,25 @@ app.get("/updateEmails", async (req, res) => {
   } catch (err) {
     console.error("Email update error:", err);
     res.status(500).json({ error: "Failed to update emails" });
+  }
+});
+
+
+app.get("/updatePasswords", async (req, res) => {
+  try {
+    const saltRounds = 10;
+    const plainPassword = "Bonchon1234";
+    const hashedPassword = await bcrypt.hash(plainPassword, saltRounds);
+
+    const pool = await getConnection();
+    await pool.request().input("hashedPassword", hashedPassword).query(`
+        UPDATE [Item_Buildup].[dbo].[mtbl_users]
+        SET [Password] = @hashedPassword
+      `);
+
+    res.json({ message: "All user passwords updated to hashed value." });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Failed to update passwords");
   }
 });

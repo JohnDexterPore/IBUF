@@ -53,7 +53,7 @@ function Users() {
     <div className="w-full h-full flex gap-10 flex-col">
       <div className="flex items-center justify-between h-1/12">
         <h1 className="text-3xl font-bold">Users</h1>
-        <div className="flex gap-5 items-center">
+        <div className="flex gap-2 items-center">
           <button
             onClick={runEmailUpdate}
             className="text-white font-bold h-12 px-4 rounded-md bg-blue-500 flex items-center justify-center"
@@ -87,9 +87,9 @@ function Users() {
         </div>
       </div>
 
-      <div className="w-full overflow-auto h-11/12">
-        <table className="min-w-full border border-gray-200 shadow-md rounded-md">
-          <thead className="bg-gray-800 text-white sticky top-0">
+      <div className="rounded-2xl overflow-auto shadow-md border border-gray-200">
+        <table className="min-w-full">
+          <thead className="bg-gray-800 text-white sticky top-0 rounded-2xl">
             <tr>
               <th className="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">
                 Actions
