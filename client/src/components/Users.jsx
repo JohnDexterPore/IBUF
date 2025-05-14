@@ -14,28 +14,36 @@ function Users() {
   const columnNames = fetchUsers.length > 0 ? Object.keys(fetchUsers[0]) : [];
 
   return (
-    <table className="table-auto w-full border-collapse border border-gray-300">
-      <thead>
-        <tr>
-          {columnNames.map((col) => (
-            <th key={col} className="border px-4 py-2 bg-gray-100 text-left">
-              {col}
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {fetchUsers.map((user, index) => (
-          <tr key={index}>
+    <div className="overflow-x-auto">
+      <table className="min-w-full border border-gray-200 shadow-md rounded-md overflow-hidden">
+        <thead className="bg-blue-600 text-white">
+          <tr>
             {columnNames.map((col) => (
-              <td key={col} className="border px-4 py-2">
-                {user[col]}
-              </td>
+              <th
+                key={col}
+                className="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider"
+              >
+                {col}
+              </th>
             ))}
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody className="bg-white divide-y divide-gray-200">
+          {fetchUsers.map((user, index) => (
+            <tr
+              key={index}
+              className="hover:bg-gray-100 transition-colors duration-200"
+            >
+              {columnNames.map((col) => (
+                <td key={col} className="px-6 py-4 text-sm text-gray-700">
+                  {user[col]}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }
 
