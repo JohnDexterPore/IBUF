@@ -1,0 +1,123 @@
+import React, { useEffect, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useCookies } from "react-cookie";
+import axios from "axios";
+import Alert from "./Alert";
+
+function NavBar() {
+  const [cookies, , removeCookie] = useCookies(["user"]);
+  const [fetchCompanies, setFetchCompanies] = useState([]);
+  const [navigationItems, setNavigationItems] = useState([]);
+  const [showAlert, setShowAlert] = useState(false);
+
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Check authentication on load
+  useEffect(() => {
+    if (!cookies.user) {
+      navigate("/");
+    } else {
+      axios
+        .get("http://localhost:3001/getCompanies")
+        .then((res) => setFetchCompanies(res.data))
+        .catch((err) => console.error("Companies fetch error:", err));
+
+      axios
+        .get(`http://localhost:3001/getNavigation/${cookies.user.AccountType}`)
+        .then((res) => setNavigationItems(res.data))
+        .catch((err) => console.error("Navigation fetch error:", err));
+    }
+  }, [cookies, navigate]);
+
+  const handleSignOut = () => setShowAlert(true);
+  const handleProceed = () => {
+    removeCookie("user", { path: "/" });
+    navigate("/");
+  };
+  const handleCancel = () => setShowAlert(false);
+
+  const isActive = (path) =>
+    location.pathname.toLowerCase() === path.toLowerCase();
+
+  return (
+    <>
+      <aside
+        id="logo-sidebar"
+        className="fixed top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0"
+        aria-label="Sidebar"
+      >
+        <div className="h-full px-3 py-4 overflow-y-auto bg-gray-50 dark:bg-gray-800">
+          {/* Company Logo */}
+          <div className="flex justify-center items-center ps-2.5 h-1/12">
+            {fetchCompanies.map((company, index) => (
+              <>
+                <img
+                  key={index}
+                  src={company.logo_address}
+                  className="lg:h-13 me-5 h-7"
+                  alt={company.company_name}
+                />
+              </>
+            ))}
+          </div>
+
+          {/* Navigation Links */}
+          <ul className="flex flex-col h-11/12 space-y-2 font-medium pt-5">
+            {navigationItems.map((nav, index) => (
+              <li key={index}>
+                <a
+                  href={nav.navLink}
+                  className={`flex items-center p-2 rounded-lg group transition-colors ${
+                    isActive(nav.navLink)
+                      ? "bg-gray-200 text-blue-700 dark:bg-gray-700 dark:text-white"
+                      : "text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
+                  }`}
+                >
+                  <svg
+                    className="w-5 h-5 text-gray-500 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                    viewBox="0 0 24 25"
+                    fill="currentColor"
+                    xmlns="http://www.w3.org/2000/svg"
+                    aria-hidden="true"
+                    dangerouslySetInnerHTML={{ __html: nav.navSVG }}
+                  />
+                  <span className="ms-3 whitespace-nowrap">{nav.navName}</span>
+                </a>
+              </li>
+            ))}
+
+            {/* Signout Button */}
+            <li className="mt-auto">
+              <button
+                onClick={handleSignOut}
+                className="w-full flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+              >
+                <svg
+                  className="w-5 h-5 text-gray-500 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                  viewBox="0 0 24 25"
+                  fill="currentColor"
+                  xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true"
+                >
+                  <path d="M11.25 2.62451C10.0074 2.62451 9 3.63187 9 4.87451V6.60927C9.76128 6.98704 10.2493 7.76589 10.2493 8.62451V10.3745L11.75 10.3745C12.9926 10.3745 14 11.3819 14 12.6245C14 13.8672 12.9926 14.8745 11.75 14.8745H10.2493V16.6245C10.2493 17.4831 9.76128 18.262 9 18.6397V20.3745C9 21.6172 10.0074 22.6245 11.25 22.6245H17.25C18.4926 22.6245 19.5 21.6172 19.5 20.3745V4.87451C19.5 3.63187 18.4926 2.62451 17.25 2.62451H11.25Z" />
+                  <path d="M8.28618 7.93158C8.5665 8.04764 8.74928 8.32114 8.74928 8.62453L8.74928 11.8745L11.75 11.8745C12.1642 11.8745 12.5 12.2103 12.5 12.6245C12.5 13.0387 12.1642 13.3745 11.75 13.3745L8.74928 13.3745V16.6245C8.74928 16.9279 8.56649 17.2014 8.28617 17.3175C8.00585 17.4335 7.68322 17.3693 7.46877 17.1547L3.50385 13.187C3.34818 13.0496 3.25 12.8485 3.25 12.6245C3.25 12.4016 3.34723 12.2015 3.50159 12.0641L7.46878 8.09437C7.68324 7.87978 8.00587 7.81552 8.28618 7.93158Z" />
+                </svg>
+                <span className="ms-3 whitespace-nowrap">Sign Out</span>
+              </button>
+            </li>
+          </ul>
+        </div>
+      </aside>
+
+      <Alert
+        isVisible={showAlert}
+        onConfirm={handleProceed}
+        onCancel={handleCancel}
+        message="Are you sure you want to Sign out?"
+      />
+    </>
+  );
+}
+
+export default NavBar;
