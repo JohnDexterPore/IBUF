@@ -126,7 +126,7 @@ app.get("/getUsers", async (req, res) => {
   try {
     const pool = await getConnection();
     const result = await pool.request().query(`
-      SELECT * FROM [Item_Buildup].[dbo].[mtbl_users]
+      SELECT * FROM [Item_Buildup].[dbo].[mtbl_users] ORDER BY Name
     `);
     res.json(result.recordset);
   } catch (err) {

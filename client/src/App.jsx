@@ -27,7 +27,7 @@ function AppWrapper() {
       <div className="w-2/12">
         <NavBar />
       </div>
-      <div className="w-10/12 h-full max-w-full p-10 overflow-auto">
+      <div className="w-10/12 h-full max-w-full p-10 overflow-hidden">
         <Routes>
           <Route path="/home" element={<Home />} />
           <Route path="/users" element={<Users />} />
