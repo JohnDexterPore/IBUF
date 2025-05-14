@@ -160,3 +160,26 @@ app.get("/getExternalUsers/:empID", async (req, res) => {
     res.status(500).send("Failed to fetch external users");
   }
 });
+
+app.get("/updateEmails", async (req, res) => {
+  try {
+    const pool = await sql.connect(/* your DB config */);
+
+    const query = `
+      UPDATE u
+      SET u.Email = v.EmailAddress
+      FROM [Item_Buildup].[dbo].[mtbl_users] u
+      JOIN SCFHPAYROLL.PAYROLL.dbo.vw_EmpListActive v
+        ON u.EmployeeID = v.EmployeeID
+      WHERE v.EmpStatus = '30'
+        AND v.Company = '100'
+        AND v.DeptID IN ('HR', 'IT', 'CA', 'MK', 'AC');
+    `;
+
+    await pool.request().query(query);
+    res.status(200).json({ message: "Emails updated successfully." });
+  } catch (err) {
+    console.error("Email update error:", err);
+    res.status(500).json({ error: "Failed to update emails" });
+  }
+});
