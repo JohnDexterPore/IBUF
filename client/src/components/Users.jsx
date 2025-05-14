@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Modal from "./Modal";
-import Prompt from "./Prompt"; // Import the Prompt component
+import Prompt from "./Prompt";
 function Users() {
   const [fetchUsers, setFetchUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false); // Modal visibility state
-  const [isPromptOpen, setIsPromptOpen] = useState(false); // Modal visibility state
+  const [isPromptOpen, setIsPromptOpen] = useState(false); // Prompt visibility state
   const [promptMessage, setPromptMessage] = useState(""); // Prompt message state
   const [updateTrigger, setUpdateTrigger] = useState(false); // State to trigger useEffect
 
