@@ -45,7 +45,7 @@ function LoginForm() {
 
       setCookie("user", cookieData, {
         path: "/",
-        ...(isChecked ? {} : { maxAge: remember }), // 3600 only if not checked
+        ...(isChecked ? {} : { maxAge: remember }),
       });
 
       navigate("/Companies");
@@ -60,9 +60,9 @@ function LoginForm() {
         <div className="flex min-h-full flex-1 flex-col justify-center lg:py-12 py-5 lg:px-8">
           <div className="mx-auto w-full max-w-sm">
             <div className="flex flex-wrap justify-center items-center gap-5">
-              {fetchCompanies.map((company, index) => (
+              {fetchCompanies.map((company) => (
                 <img
-                  key={index}
+                  key={company.company_id}
                   className="lg:h-15 h-10 w-auto"
                   src={company.logo_address}
                   alt={`${company.CompanyName} Logo`}
