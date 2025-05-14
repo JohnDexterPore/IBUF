@@ -121,3 +121,16 @@ app.get("/getNavigation/:userType", async (req, res) => {
     res.status(500).send("Failed to fetch Navigation");
   }
 });
+
+app.get("/getUsers", async (req, res) => {
+  try {
+    const pool = await getConnection();
+    const result = await pool.request().query(`
+      SELECT * FROM [Item_Buildup].[dbo].[mtbl_users]
+    `);
+    res.json(result.recordset);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Failed to fetch users");
+  }
+});
