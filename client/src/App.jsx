@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { CookiesProvider } from "react-cookie";
 import Login from "./components/Login";
@@ -11,17 +11,24 @@ function AppWrapper() {
   const hideNavbarPaths = ["/", "/admin"];
   const shouldShowNavbar = !hideNavbarPaths.includes(location.pathname);
 
+  // Fullscreen layout (e.g., Login page)
+  if (!shouldShowNavbar) {
+    return (
+      <Routes>
+        <Route path="/" element={<Login />} />
+        {/* Add more fullscreen routes if needed */}
+      </Routes>
+    );
+  }
+
+  // Layout with sidebar for authenticated views
   return (
     <div className="flex flex-row h-screen w-screen">
-      {shouldShowNavbar && (
-        <div className="w-2/12">
-          <NavBar />
-        </div>
-      )}
-
+      <div className="w-2/12">
+        <NavBar />
+      </div>
       <div className="w-10/12 h-full max-w-full p-10 overflow-auto">
         <Routes>
-          <Route path="/" element={<Login />} />
           <Route path="/home" element={<Home />} />
           <Route path="/users" element={<Users />} />
         </Routes>
