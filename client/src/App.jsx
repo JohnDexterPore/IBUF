@@ -12,16 +12,14 @@ function AppWrapper() {
   const shouldShowNavbar = !hideNavbarPaths.includes(location.pathname);
 
   return (
-    <div className="flex flex-row min-h-screen w-screen">
-      {/* Sidebar / NavBar */}
+    <div className="flex flex-row h-screen w-screen">
       {shouldShowNavbar && (
-        <div className="w-2/12 border-r border-gray-200">
+        <div className="w-2/12">
           <NavBar />
         </div>
       )}
 
-      {/* Main Content */}
-      <div className="w-10/12 p-4">
+      <div className="w-10/12 h-full max-w-full p-10 overflow-auto">
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/home" element={<Home />} />
