@@ -1,7 +1,7 @@
 import React from "react";
 
-const Alert = ({ message, onConfirm, onCancel, isVisible }) => {
-  if (!isVisible) return null;
+const Alert = ({ message, onConfirm, onCancel, showAlert }) => {
+  if (!showAlert) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 animate-fade-in">

@@ -1,19 +1,18 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import Prompt from "./Prompt";
 
-const Modal = ({ isOpen, onClose }) => {
+const Modal = ({
+  isOpen,
+  onClose,
+  setUpdateTrigger,
+  setPromptMessage,
+  setIsPromptOpen,
+}) => {
   if (!isOpen) return null;
   const [employeeId, setEmployeeId] = useState("");
   const [fetchEmployees, setFetchEmployees] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
-  const [updateTrigger, setUpdateTrigger] = useState(false); // State to trigger useEffect
-
-  useEffect(() => {
-    axios
-      .get("http://localhost:3001/getUsers")
-      .then((res) => setFetchUsers(res.data))
-      .catch((err) => console.error("Users fetch error:", err));
-  }, [updateTrigger]); // Add updateTrigger as a dependency
 
   const fetchEmployeeData = async (employeeId) => {
     axios
@@ -36,20 +35,30 @@ const Modal = ({ isOpen, onClose }) => {
       document.getElementById("department").value = selected.Department;
       document.getElementById("email").value = selected.EmailAddress;
     }
+    setUpdateTrigger((prev) => !prev);
   };
 
+  // inside Modal.jsx
   const handleSubmit = () => {
-    axios.post("http://localhost:3001/addUser", {
-      EmployeeID: document.getElementById("employeeId").value,
-      AccountType: document.getElementById("accountType").value,
-      FirstName: document.getElementById("firstName").value,
-      LastName: document.getElementById("lastName").value,
-      JobTitle: document.getElementById("jobTitle").value,
-      Department: document.getElementById("department").value,
-      Email: document.getElementById("email").value,
-      Password: document.getElementById("password").value,
-    });
-    setUpdateTrigger((prev) => !prev);
+    axios
+      .post("http://localhost:3001/addUser", {
+        EmployeeID: employeeId,
+        AccountType: document.getElementById("accountType").value,
+        FirstName: document.getElementById("firstName").value,
+        LastName: document.getElementById("lastName").value,
+        JobTitle: document.getElementById("jobTitle").value,
+        Department: document.getElementById("department").value,
+        Email: document.getElementById("email").value,
+        Password: document.getElementById("password").value,
+      })
+      .then(() => {
+        /* ▲ POST was successful ― now tell <Users> to refetch */
+        setPromptMessage("User added successfully!");
+        setIsPromptOpen(true);
+        setUpdateTrigger((prev) => !prev);
+        onClose();
+      })
+      .catch((err) => console.error("Add-user error:", err));
   };
 
   useEffect(() => {

@@ -251,3 +251,21 @@ app.post("/addUser", async (req, res) => {
     res.status(500).send("Failed to add user");
   }
 });
+
+app.delete("/deleteUser/:employeeId", async (req, res) => {
+  const { employeeId } = req.params;
+  console.log("Deleting user with EmployeeID:", employeeId);
+
+  try {
+    const pool = await getConnection();
+    await pool.request().input("employeeId", sql.VarChar, employeeId).query(`
+        DELETE FROM [Item_Buildup].[dbo].[mtbl_users]
+        WHERE EmployeeID = @employeeId;
+      `);
+
+    res.json({ message: "User deleted successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Failed to delete user");
+  }
+});

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Modal from "./Modal";
 import Prompt from "./Prompt";
+import Alert from "./Alert";
 function Users() {
   const [fetchUsers, setFetchUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -9,6 +10,9 @@ function Users() {
   const [isPromptOpen, setIsPromptOpen] = useState(false); // Prompt visibility state
   const [promptMessage, setPromptMessage] = useState(""); // Prompt message state
   const [updateTrigger, setUpdateTrigger] = useState(false); // State to trigger useEffect
+  const [showAlert, setShowAlert] = useState(false); // Alert visibility state
+  const [alertMessage, setAlertMessage] = useState(""); // Alert message state
+  const [userId, setUserId] = useState(""); // State to store user ID for deletion
 
   useEffect(() => {
     axios
@@ -21,14 +25,40 @@ function Users() {
     axios
       .get("http://localhost:3001/updateEmails")
       .then((res) => {
-        console.log("Email update response:", res.data.message);
         setPromptMessage(res.data.message); // Set the prompt message
         setIsPromptOpen(true); // Open the prompt
         setUpdateTrigger((prev) => !prev); // Trigger the useEffect to re-fetch users
       })
       .catch((err) => {
-        console.error("Email update request error:", err);
+        setPromptMessage(err.response.data.message); // Set the prompt message
+        setIsPromptOpen(true); // Open the prompt
+        setUpdateTrigger((prev) => !prev); // Trigger the useEffect to re-fetch users
       });
+  };
+
+  const handleDelete = (userId) => {
+    setUserId(userId); // Store the user ID to be deleted
+    setAlertMessage("Are you sure you want to delete this user?");
+    setShowAlert(true);
+  };
+
+  const onConfirm = () => {
+    axios
+      .delete(`http://localhost:3001/deleteUser/${userId}`)
+      .then((res) => {
+        setPromptMessage("User deleted successfully!");
+        setIsPromptOpen(true);
+        setUpdateTrigger((prev) => !prev); // refresh user list
+      })
+      .catch((err) => {
+        console.error("User deletion error:", err);
+      });
+
+    setShowAlert(false);
+  };
+
+  const onCancel = () => {
+    setShowAlert(false);
   };
 
   const columnNames =
@@ -87,7 +117,7 @@ function Users() {
         </div>
       </div>
 
-      <div className="rounded-2xl overflow-auto shadow-md border border-gray-200  h-11/12">
+      <div className="rounded-2xl overflow-auto shadow-md border border-gray-200">
         <table className="min-w-full">
           <thead className="bg-gray-800 text-white sticky top-0 rounded-2xl">
             <tr>
@@ -125,7 +155,10 @@ function Users() {
                         <path d="M19.7409 7.346L16.6537 4.25878L13.2417 7.6708C12.8788 8.03363 12.6509 8.50959 12.5957 9.01974L12.4067 10.7667C12.3823 10.9924 12.4614 11.2171 12.622 11.3777C12.7826 11.5382 13.0073 11.6174 13.233 11.593L14.9799 11.404C15.4901 11.3488 15.9661 11.1209 16.3289 10.758L19.7409 7.346Z" />
                       </svg>
                     </button>
-                    <button className="text-white font-bold px-2 py-2 rounded-4xl bg-red-500">
+                    <button
+                      onClick={() => handleDelete(user.EmployeeID)}
+                      className="text-white font-bold px-2 py-2 rounded-4xl bg-red-500"
+                    >
                       <svg
                         className="w-7 h-7 text-gray-500 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
                         viewBox="0 0 24 25"
@@ -166,11 +199,25 @@ function Users() {
           </tbody>
         </table>
       </div>
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        setUpdateTrigger={setUpdateTrigger}
+        setPromptMessage={setPromptMessage}
+        setIsPromptOpen={setIsPromptOpen}
+      />
+
       <Prompt
         message={promptMessage}
         isVisible={isPromptOpen}
         onAccept={() => setIsPromptOpen(false)}
+      />
+
+      <Alert
+        message={alertMessage}
+        onConfirm={onConfirm}
+        onCancel={onCancel}
+        showAlert={showAlert}
       />
     </div>
   );
