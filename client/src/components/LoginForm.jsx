@@ -18,7 +18,7 @@ function LoginForm() {
 
   useEffect(() => {
     if (cookies["user"]) {
-      navigate("/Companies"); // Navigate to the correct path
+      navigate("/Home"); // Navigate to the correct path
     }
     axios
       .get("http://localhost:3001/getCompanies")
@@ -34,11 +34,12 @@ function LoginForm() {
       });
 
       const cookieData = {
-        AccountType: response.data.user.AccountType,
-        Department: response.data.user.Department,
-        EmployeeID: response.data.user.EmployeeID,
-        JobTitle: response.data.user.JobTitle,
-        Name: response.data.user.Name,
+        AccountType: response.data.user.account_type,
+        Department: response.data.user.department,
+        EmployeeID: response.data.user.employee_id,
+        JobTitle: response.data.user.job_title,
+        FirstName: response.data.user.first_name,
+        LastName: response.data.user.last_name,
         message: response.data.message,
         loginTime: new Date().toISOString(),
       };
@@ -47,8 +48,6 @@ function LoginForm() {
         path: "/",
         ...(isChecked ? {} : { maxAge: remember }),
       });
-
-      navigate("/Companies");
     } catch (err) {
       console.error("Login failed:", err);
       alert("Invalid credentials");
@@ -65,7 +64,7 @@ function LoginForm() {
                   key={company.company_id}
                   className="lg:h-15 h-10 w-auto"
                   src={company.logo_address}
-                  alt={`${company.CompanyName} Logo`}
+                  alt={`${company.company_name} Logo`}
                 />
               ))}
             </div>

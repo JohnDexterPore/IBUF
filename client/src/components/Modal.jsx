@@ -8,6 +8,7 @@ const Modal = ({
   setUpdateTrigger,
   setPromptMessage,
   setIsPromptOpen,
+  modalType,
 }) => {
   if (!isOpen) return null;
   const [employeeId, setEmployeeId] = useState("");
@@ -42,14 +43,14 @@ const Modal = ({
   const handleSubmit = () => {
     axios
       .post("http://localhost:3001/addUser", {
-        EmployeeID: employeeId,
-        AccountType: document.getElementById("accountType").value,
-        FirstName: document.getElementById("firstName").value,
-        LastName: document.getElementById("lastName").value,
-        JobTitle: document.getElementById("jobTitle").value,
-        Department: document.getElementById("department").value,
-        Email: document.getElementById("email").value,
-        Password: document.getElementById("password").value,
+        employee_id: employeeId,
+        account_type: document.getElementById("accountType").value,
+        first_name: document.getElementById("firstName").value,
+        last_name: document.getElementById("lastName").value,
+        job_title: document.getElementById("jobTitle").value,
+        department: document.getElementById("department").value,
+        email: document.getElementById("email").value,
+        password: document.getElementById("password").value,
       })
       .then(() => {
         /* ▲ POST was successful ― now tell <Users> to refetch */

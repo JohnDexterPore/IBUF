@@ -67,9 +67,9 @@ function NavBar() {
             {navigationItems.map((nav, index) => (
               <li key={index}>
                 <a
-                  href={nav.navLink}
+                  href={nav.nav_link}
                   className={`flex items-center p-2 rounded-lg group transition-colors ${
-                    isActive(nav.navLink)
+                    isActive(nav.nav_link)
                       ? "bg-gray-200 text-blue-700 dark:bg-gray-700 dark:text-white"
                       : "text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
                   }`}
@@ -80,9 +80,9 @@ function NavBar() {
                     fill="currentColor"
                     xmlns="http://www.w3.org/2000/svg"
                     aria-hidden="true"
-                    dangerouslySetInnerHTML={{ __html: nav.navSVG }}
+                    dangerouslySetInnerHTML={{ __html: nav.nav_svg }}
                   />
-                  <span className="ms-3 whitespace-nowrap">{nav.navName}</span>
+                  <span className="ms-3 whitespace-nowrap">{nav.nav_name}</span>
                 </a>
               </li>
             ))}

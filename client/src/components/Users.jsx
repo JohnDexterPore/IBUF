@@ -13,6 +13,7 @@ function Users() {
   const [showAlert, setShowAlert] = useState(false); // Alert visibility state
   const [alertMessage, setAlertMessage] = useState(""); // Alert message state
   const [userId, setUserId] = useState(""); // State to store user ID for deletion
+  const [modalType, setModalType] = useState(""); // Type of modal (add or edit)
 
   useEffect(() => {
     axios
@@ -77,6 +78,14 @@ function Users() {
 
   const openModal = () => {
     setIsModalOpen(true);
+  };
+
+  const formatDateTime = (isoString) => {
+    if (!isoString) return "";
+    const date = new Date(isoString);
+    const formattedDate = date.toISOString().split("T")[0];
+    const formattedTime = date.toTimeString().split(" ")[0]; // HH:MM:SS
+    return `${formattedDate}\n${formattedTime}`;
   };
 
   return (
@@ -156,7 +165,7 @@ function Users() {
                       </svg>
                     </button>
                     <button
-                      onClick={() => handleDelete(user.EmployeeID)}
+                      onClick={() => handleDelete(user.employee_id)}
                       className="text-white font-bold px-2 py-2 rounded-4xl bg-red-500"
                     >
                       <svg
@@ -181,6 +190,9 @@ function Users() {
                           : user[col] === 2
                           ? "User"
                           : user[col]
+                        : col.toLowerCase().includes("date") ||
+                          col.toLowerCase().includes("time")
+                        ? formatDateTime(user[col])
                         : user[col]}
                     </td>
                   ))}
@@ -205,6 +217,7 @@ function Users() {
         setUpdateTrigger={setUpdateTrigger}
         setPromptMessage={setPromptMessage}
         setIsPromptOpen={setIsPromptOpen}
+        modalType={modalType}
       />
 
       <Prompt

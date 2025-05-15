@@ -48,22 +48,21 @@ app.post("/login", async (req, res) => {
     const result = await pool.request().input("user", sql.NVarChar, user)
       .query(`
         SELECT * FROM [Item_Buildup].[dbo].[mtbl_users]
-        WHERE EmployeeID = @user
+        WHERE employee_id = @user
       `);
 
     const dbUser = result.recordset[0];
-
     if (!dbUser) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    if (!dbUser.Password) {
+    if (!dbUser.password) {
       return res
         .status(500)
         .json({ message: "Password not found in database" });
     }
 
-    const isMatch = await bcrypt.compare(password, dbUser.Password);
+    const isMatch = await bcrypt.compare(password, dbUser.password);
 
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid password" });
@@ -126,7 +125,7 @@ app.get("/getUsers", async (req, res) => {
   try {
     const pool = await getConnection();
     const result = await pool.request().query(`
-      SELECT * FROM [Item_Buildup].[dbo].[mtbl_users] ORDER BY FirstName
+      SELECT * FROM [Item_Buildup].[dbo].[mtbl_users] ORDER BY first_name
     `);
     res.json(result.recordset);
   } catch (err) {
@@ -152,14 +151,14 @@ app.get("/getExternalUsers/:employeeId", async (req, res) => {
           EmailAddress
         FROM SCFHPAYROLL.PAYROLL.dbo.vw_EmpListActive AS A
         WHERE 
-          EmpStatus = '30' 
+          (EmpStatus = '30' OR EmpStatus = '10')
           AND Company = '100' 
           AND DeptID IN ('HR', 'IT', 'CA', 'MK', 'AC')
           AND EmployeeID LIKE @empID
           AND NOT EXISTS (
             SELECT 1 
             FROM Item_Buildup.dbo.mtbl_users AS B
-            WHERE B.EmployeeID = A.EmployeeID
+            WHERE B.employee_id = A.EmployeeID
           );
       `);
 
@@ -175,18 +174,23 @@ app.get("/updateEmails", async (req, res) => {
   try {
     const pool = await sql.connect(/* your DB config */);
 
+    const now = new Date(); // Get current date from Node.js server
+
     const query = `
       UPDATE u
-      SET u.Email = v.EmailAddress
+      SET u.email = v.EmailAddress,
+          u.edit_date = @now,
+          u.edit_by = 'Admin'
       FROM [Item_Buildup].[dbo].[mtbl_users] u
       JOIN SCFHPAYROLL.PAYROLL.dbo.vw_EmpListActive v
-        ON u.EmployeeID = v.EmployeeID
-      WHERE v.EmpStatus = '30'
+        ON u.employee_id = v.EmployeeID
+      WHERE (v.EmpStatus = '30' OR v.EmpStatus = '10')
         AND v.Company = '100'
         AND v.DeptID IN ('HR', 'IT', 'CA', 'MK', 'AC');
     `;
 
-    await pool.request().query(query);
+    await pool.request().input("now", sql.DateTime, now).query(query);
+
     res.status(200).json({ message: "Emails updated successfully." });
   } catch (err) {
     console.error("Email update error:", err);
@@ -215,13 +219,13 @@ app.get("/updatePasswords", async (req, res) => {
 
 app.post("/addUser", async (req, res) => {
   const {
-    EmployeeID,
-    AccountType,
-    FirstName,
-    LastName,
-    JobTitle,
-    Department,
-    Email,
+    employee_id,
+    account_type,
+    first_name,
+    last_name,
+    job_title,
+    department,
+    email,
     Password,
   } = req.body;
 
@@ -232,17 +236,17 @@ app.post("/addUser", async (req, res) => {
     const pool = await getConnection();
     await pool
       .request()
-      .input("EmployeeID", sql.VarChar, EmployeeID)
-      .input("AccountType", sql.Int, AccountType)
-      .input("FirstName", sql.NVarChar, FirstName)
-      .input("LastName", sql.NVarChar, LastName)
-      .input("JobTitle", sql.NVarChar, JobTitle)
-      .input("Department", sql.NVarChar, Department)
-      .input("Email", sql.NVarChar, Email)
-      .input("Password", sql.NVarChar, hashedPassword).query(`
+      .input("employee_id", sql.VarChar, employee_id)
+      .input("account_type", sql.Int, account_type)
+      .input("first_name", sql.NVarChar, first_name)
+      .input("last_name", sql.NVarChar, last_name)
+      .input("job_title", sql.NVarChar, job_title)
+      .input("department", sql.NVarChar, department)
+      .input("email", sql.NVarChar, email)
+      .input("password", sql.NVarChar, hashedPassword).query(`
         INSERT INTO [Item_Buildup].[dbo].[mtbl_users]
-        (EmployeeID, AccountType, FirstName, LastName, JobTitle, Department, Email, Password)
-        VALUES (@EmployeeID, @AccountType, @FirstName, @LastName, @JobTitle, @Department, @Email, @Password);
+        (employee_id, account_type, first_name, last_name, job_title, department, email, password)
+        VALUES (@employee_id, @account_type, @first_name, @last_name, @job_title, @department, @email, @password);
       `);
 
     res.json({ message: "User added successfully" });
