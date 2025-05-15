@@ -6,6 +6,14 @@ const Modal = ({ isOpen, onClose }) => {
   const [employeeId, setEmployeeId] = useState("");
   const [fetchEmployees, setFetchEmployees] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [updateTrigger, setUpdateTrigger] = useState(false); // State to trigger useEffect
+
+  useEffect(() => {
+    axios
+      .get("http://localhost:3001/getUsers")
+      .then((res) => setFetchUsers(res.data))
+      .catch((err) => console.error("Users fetch error:", err));
+  }, [updateTrigger]); // Add updateTrigger as a dependency
 
   const fetchEmployeeData = async (employeeId) => {
     axios
@@ -41,6 +49,7 @@ const Modal = ({ isOpen, onClose }) => {
       Email: document.getElementById("email").value,
       Password: document.getElementById("password").value,
     });
+    setUpdateTrigger((prev) => !prev);
   };
 
   useEffect(() => {
