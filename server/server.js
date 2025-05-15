@@ -212,3 +212,42 @@ app.get("/updatePasswords", async (req, res) => {
     res.status(500).send("Failed to update passwords");
   }
 });
+
+app.post("/addUser", async (req, res) => {
+  const {
+    EmployeeID,
+    AccountType,
+    FirstName,
+    LastName,
+    JobTitle,
+    Department,
+    Email,
+    Password,
+  } = req.body;
+
+  try {
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(Password, saltRounds);
+
+    const pool = await getConnection();
+    await pool
+      .request()
+      .input("EmployeeID", sql.VarChar, EmployeeID)
+      .input("AccountType", sql.Int, AccountType)
+      .input("FirstName", sql.NVarChar, FirstName)
+      .input("LastName", sql.NVarChar, LastName)
+      .input("JobTitle", sql.NVarChar, JobTitle)
+      .input("Department", sql.NVarChar, Department)
+      .input("Email", sql.NVarChar, Email)
+      .input("Password", sql.NVarChar, hashedPassword).query(`
+        INSERT INTO [Item_Buildup].[dbo].[mtbl_users]
+        (EmployeeID, AccountType, FirstName, LastName, JobTitle, Department, Email, Password)
+        VALUES (@EmployeeID, @AccountType, @FirstName, @LastName, @JobTitle, @Department, @Email, @Password);
+      `);
+
+    res.json({ message: "User added successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Failed to add user");
+  }
+});
