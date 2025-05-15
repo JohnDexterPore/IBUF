@@ -7,13 +7,13 @@ function Users() {
   const [fetchUsers, setFetchUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false); // Modal visibility state
+  const [selectedUser, setSelectedUser] = useState(null); // User data for editing
   const [isPromptOpen, setIsPromptOpen] = useState(false); // Prompt visibility state
   const [promptMessage, setPromptMessage] = useState(""); // Prompt message state
   const [updateTrigger, setUpdateTrigger] = useState(false); // State to trigger useEffect
   const [showAlert, setShowAlert] = useState(false); // Alert visibility state
   const [alertMessage, setAlertMessage] = useState(""); // Alert message state
   const [userId, setUserId] = useState(""); // State to store user ID for deletion
-  const [modalType, setModalType] = useState(""); // Type of modal (add or edit)
 
   useEffect(() => {
     axios
@@ -76,7 +76,12 @@ function Users() {
       .includes(searchTerm.toLowerCase())
   );
 
-  const openModal = () => {
+  const openModal = (user = null) => {
+    if (user) {
+      setSelectedUser(user);
+    } else {
+      setSelectedUser(null);
+    }
     setIsModalOpen(true);
   };
 
@@ -110,7 +115,7 @@ function Users() {
           </button>
 
           <button
-            onClick={openModal}
+            onClick={() => openModal()}
             className="text-white font-bold h-12 px-4 rounded-md bg-green-500 flex items-center"
           >
             Add User
@@ -151,7 +156,11 @@ function Users() {
                   className="hover:bg-gray-100 transition-colors duration-200"
                 >
                   <td className="px-6 py-3 text-sm text-gray-700 flex gap-2">
-                    <button className="text-white font-bold px-2 py-2 rounded-4xl bg-green-500">
+                    <button
+                      id={"edit " + index}
+                      onClick={() => openModal(user)}
+                      className="text-white font-bold px-2 py-2 rounded-4xl bg-green-500"
+                    >
                       <svg
                         className="w-7 h-7 text-gray-500 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
                         viewBox="0 0 24 25"
@@ -165,6 +174,7 @@ function Users() {
                       </svg>
                     </button>
                     <button
+                      id={"delete " + index}
                       onClick={() => handleDelete(user.employee_id)}
                       className="text-white font-bold px-2 py-2 rounded-4xl bg-red-500"
                     >
@@ -217,7 +227,8 @@ function Users() {
         setUpdateTrigger={setUpdateTrigger}
         setPromptMessage={setPromptMessage}
         setIsPromptOpen={setIsPromptOpen}
-        modalType={modalType}
+        mode={selectedUser ? "edit" : "new"}
+        user={selectedUser}
       />
 
       <Prompt

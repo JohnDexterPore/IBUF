@@ -7,6 +7,8 @@ const app = express();
 app.use(cors());
 app.use(express.json()); // Allow JSON request body
 
+const now = new Date(); // Get current date from Node.js server
+
 const config = {
   user: "sa",
   password: "b1@dmin2022",
@@ -98,10 +100,10 @@ app.get("/getNavigation/:userType", async (req, res) => {
       condition = ""; // No filter
       break;
     case 1:
-      condition = "WHERE [userType] != 0";
+      condition = "WHERE [user_type] != 0";
       break;
     case 2:
-      condition = "WHERE [userType] = 2";
+      condition = "WHERE [user_type] = 2";
       break;
     default:
       return res.status(400).send("Invalid userType");
@@ -174,8 +176,6 @@ app.get("/updateEmails", async (req, res) => {
   try {
     const pool = await sql.connect(/* your DB config */);
 
-    const now = new Date(); // Get current date from Node.js server
-
     const query = `
       UPDATE u
       SET u.email = v.EmailAddress,
@@ -226,27 +226,30 @@ app.post("/addUser", async (req, res) => {
     job_title,
     department,
     email,
-    Password,
+    password,
+    user_id,
   } = req.body;
 
   try {
     const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(Password, saltRounds);
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     const pool = await getConnection();
     await pool
       .request()
       .input("employee_id", sql.VarChar, employee_id)
       .input("account_type", sql.Int, account_type)
-      .input("first_name", sql.NVarChar, first_name)
-      .input("last_name", sql.NVarChar, last_name)
-      .input("job_title", sql.NVarChar, job_title)
-      .input("department", sql.NVarChar, department)
-      .input("email", sql.NVarChar, email)
-      .input("password", sql.NVarChar, hashedPassword).query(`
+      .input("first_name", sql.VarChar, first_name)
+      .input("last_name", sql.VarChar, last_name)
+      .input("job_title", sql.VarChar, job_title)
+      .input("department", sql.VarChar, department)
+      .input("email", sql.VarChar, email)
+      .input("password", sql.VarChar, hashedPassword)
+      .input("user_id", sql.VarChar, user_id)
+      .input("now", sql.DateTime, now).query(`
         INSERT INTO [Item_Buildup].[dbo].[mtbl_users]
-        (employee_id, account_type, first_name, last_name, job_title, department, email, password)
-        VALUES (@employee_id, @account_type, @first_name, @last_name, @job_title, @department, @email, @password);
+        (employee_id, account_type, first_name, last_name, job_title, department, email, password, created_date, created_by)
+        VALUES (@employee_id, @account_type, @first_name, @last_name, @job_title, @department, @email, @password, @now, @user_id);
       `);
 
     res.json({ message: "User added successfully" });
@@ -264,12 +267,74 @@ app.delete("/deleteUser/:employeeId", async (req, res) => {
     const pool = await getConnection();
     await pool.request().input("employeeId", sql.VarChar, employeeId).query(`
         DELETE FROM [Item_Buildup].[dbo].[mtbl_users]
-        WHERE EmployeeID = @employeeId;
+        WHERE employee_id = @employeeId;
       `);
 
     res.json({ message: "User deleted successfully" });
   } catch (err) {
     console.error(err);
     res.status(500).send("Failed to delete user");
+  }
+});
+
+app.put("/updateUser", async (req, res) => {
+  const {
+    employee_id,
+    account_type,
+    first_name,
+    last_name,
+    job_title,
+    department,
+    email,
+    password,
+    user_id,
+  } = req.body;
+
+  try {
+    const request = new sql.Request();
+
+    // Always required inputs
+    request.input("employee_id", sql.VarChar, employee_id);
+    request.input("account_type", sql.Int, account_type);
+    request.input("first_name", sql.VarChar, first_name);
+    request.input("last_name", sql.VarChar, last_name);
+    request.input("job_title", sql.VarChar, job_title);
+    request.input("department", sql.VarChar, department);
+    request.input("email", sql.NVarChar, email);
+    request.input("user_id", sql.VarChar, user_id); // Editor
+    request.input("now", sql.DateTime, now); // Timestamp
+
+    // Optional password update
+    let passwordClause = "";
+    if (password && password.trim() !== "") {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      passwordClause = ", password = @password";
+      request.input("password", sql.NVarChar, hashedPassword);
+    }
+
+    // Final SQL query
+    const query = `
+      UPDATE [Item_Buildup].[dbo].[mtbl_users]
+      SET 
+        account_type = @account_type,
+        first_name = @first_name,
+        last_name = @last_name,
+        job_title = @job_title,
+        department = @department,
+        email = @email
+        ${passwordClause},
+        edit_date = @now,
+        edit_by = @user_id
+      WHERE employee_id = @employee_id
+    `;
+
+    await request.query(query);
+    res.status(200).json({ message: "User updated successfully" });
+  } catch (err) {
+    console.error("Error updating user:", err);
+    res.status(500).json({
+      message: "Failed to update user",
+      error: err.message,
+    });
   }
 });

@@ -111,7 +111,7 @@ function NavBar() {
       </aside>
 
       <Alert
-        isVisible={showAlert}
+        showAlert={showAlert}
         onConfirm={handleProceed}
         onCancel={handleCancel}
         message="Are you sure you want to Sign out?"
