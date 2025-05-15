@@ -135,29 +135,39 @@ app.get("/getUsers", async (req, res) => {
   }
 });
 
-app.get("/getExternalUsers/:empID", async (req, res) => {
-  const empID = req.params.empID;
+app.get("/getExternalUsers/:employeeId", async (req, res) => {
+  const { employeeId } = req.params;
+
   try {
-    const pool = await getConnection();
-    const result = await pool.request().query(`
-      SELECT 
-        EmployeeID, 
-        FirstName + ' ' + LastName AS name, 
-        JobTitle, 
-        Department, 
-        CAST('Bonchon1234' AS VARCHAR(MAX)) AS [Password], 
-        CAST('2' AS INT) AS account_type
-      FROM SCFHPAYROLL.PAYROLL.dbo.vw_EmpListActive AS vw_EmpListActive_1
-      WHERE 
-        EmpStatus = '30' 
-        AND Company = '100' 
-        AND DeptID IN ('HR', 'IT', 'CA', 'MK', 'AC')
-        AND EmployeeID = @empID
-    `);
+    // Example SQL or logic to fetch users
+    const result = await pool
+      .request()
+      .input("empID", sql.VarChar, `%${employeeId}%`).query(`
+        SELECT 
+          EmployeeID, 
+          FirstName, 
+          LastName, 
+          JobTitle, 
+          Department, 
+          EmailAddress
+        FROM SCFHPAYROLL.PAYROLL.dbo.vw_EmpListActive AS A
+        WHERE 
+          EmpStatus = '30' 
+          AND Company = '100' 
+          AND DeptID IN ('HR', 'IT', 'CA', 'MK', 'AC')
+          AND EmployeeID LIKE @empID
+          AND NOT EXISTS (
+            SELECT 1 
+            FROM Item_Buildup.dbo.mtbl_users AS B
+            WHERE B.EmployeeID = A.EmployeeID
+          );
+      `);
+
     res.json(result.recordset);
   } catch (err) {
-    console.error("Failed to fetch external users:", err);
-    res.status(500).send("Failed to fetch external users");
+    console.error("Database error:", err.message);
+    console.error(err.stack);
+    res.status(500).json({ error: "Failed to fetch external users" });
   }
 });
 
@@ -183,7 +193,6 @@ app.get("/updateEmails", async (req, res) => {
     res.status(500).json({ error: "Failed to update emails" });
   }
 });
-
 
 app.get("/updatePasswords", async (req, res) => {
   try {

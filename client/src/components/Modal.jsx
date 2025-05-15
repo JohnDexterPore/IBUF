@@ -1,7 +1,54 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 
 const Modal = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
+  const [employeeId, setEmployeeId] = useState("");
+  const [fetchEmployees, setFetchEmployees] = useState([]);
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
+
+  const fetchEmployeeData = async (employeeId) => {
+    axios
+      .get("http://localhost:3001/getExternalUsers/" + employeeId)
+      .then((res) => setFetchEmployees(res.data))
+      .catch((err) => console.error("Companies fetch error:", err));
+  };
+
+  const handleChange = (event) => {
+    const value = event.target.value;
+    setEmployeeId(value);
+
+    const selected = fetchEmployees.find((emp) => emp.EmployeeID === value);
+    if (selected) {
+      setSelectedEmployee(selected);
+      // Populate the form fields with the selected employee's data
+      document.getElementById("firstName").value = selected.FirstName;
+      document.getElementById("lastName").value = selected.LastName;
+      document.getElementById("jobTitle").value = selected.JobTitle;
+      document.getElementById("department").value = selected.Department;
+      document.getElementById("email").value = selected.EmailAddress;
+    }
+  };
+
+  const handleSubmit = () => {
+    axios.post("http://localhost:3001/addUser", {
+      EmployeeID: document.getElementById("employeeId").value,
+      AccountType: document.getElementById("accountType").value,
+      FirstName: document.getElementById("firstName").value,
+      LastName: document.getElementById("lastName").value,
+      JobTitle: document.getElementById("jobTitle").value,
+      Department: document.getElementById("department").value,
+      Email: document.getElementById("email").value,
+      Password: document.getElementById("password").value,
+    });
+  };
+
+  useEffect(() => {
+    if (employeeId) {
+      fetchEmployeeData(employeeId);
+    }
+  }, [employeeId]);
+
   return (
     <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
       <div className="bg-white rounded-2xl px-12 pt-12 pb-24 w-full md:w-1/2 lg:w-1/3 shadow-2xl gap-10 flex flex-col justify-center items-center border border-gray-200">
@@ -10,43 +57,55 @@ const Modal = ({ isOpen, onClose }) => {
             Add User
           </h1>
 
-          {/* Employee ID Section */}
-          <div className="flex flex-col">
-            <label
-              htmlFor="employeeId"
-              className="mb-1 text-sm font-medium text-gray-700"
-            >
-              Employee ID
-            </label>
-            <div className="flex justify-between items-center">
-              <input
-                id="employeeId"
-                type="text"
-                placeholder="Enter Employee ID"
-                className="w-full border border-gray-300 rounded-l-md px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                style={{ height: "38px" }} // Ensure the height is consistent with the button
-              />
-              <button
-                className="w-12 h-full px-4 py-2 bg-green-600 hover:bg-green-700 active:bg-green-800 transition-colors duration-200 rounded-r-md flex justify-center items-center focus:outline-none focus:ring-2 focus:ring-green-400"
-                aria-label="Search"
-                title="Search"
-                style={{ height: "38px" }} // Match the button height to the input height
-              >
-                <svg
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="white"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path d="M2 11.2489C2 6.14126 6.14154 2.00098 11.25 2.00098C16.3585 2.00098 20.5 6.14126 20.5 11.2489C20.5 13.5337 19.6713 15.6248 18.2981 17.2385L21.7791 20.7194C22.072 21.0123 22.072 21.4872 21.7791 21.7801C21.4862 22.073 21.0113 22.073 20.7184 21.7801L17.2371 18.2987C15.6235 19.6697 13.5334 20.4969 11.25 20.4969C6.14154 20.4969 2 16.3566 2 11.2489ZM11.25 4.99894C10.8358 4.99894 10.5 5.33473 10.5 5.74894C10.5 6.16316 10.8358 6.49894 11.25 6.49894C13.8742 6.49894 16.0013 8.62576 16.0013 11.2489C16.0013 11.6632 16.3371 11.9989 16.7513 11.9989C17.1655 11.9989 17.5013 11.6632 17.5013 11.2489C17.5013 7.79699 14.7023 4.99894 11.25 4.99894Z" />
-                </svg>
-              </button>
-            </div>
-          </div>
-
           {/* Form Inputs Section */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div className="flex flex-col">
+              <label
+                htmlFor="employeeId"
+                className="mb-1 text-sm font-medium text-gray-700"
+              >
+                Employee ID
+              </label>
+              <input
+                id="employeeId"
+                type="number"
+                name="dummy-employee-field"
+                placeholder="Enter Employee ID"
+                className="w-full border border-gray-300 rounded-md px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                style={{ height: "38px" }} // Ensure the height is consistent with the button
+                onChange={handleChange}
+                list="accountTypeList"
+              />
+              <datalist id="accountTypeList">
+                {fetchEmployees.slice(0, 10).map((employee, index) => (
+                  <option key={index} value={employee.EmployeeID}>
+                    {employee.EmployeeID}
+                  </option>
+                ))}
+              </datalist>
+            </div>
+
+            <div className="flex flex-col">
+              <label
+                htmlFor="accountType"
+                className="mb-1 text-sm font-medium text-gray-700"
+              >
+                Account Type
+              </label>
+              <select
+                id="accountType"
+                className="w-full border border-gray-300 rounded-md px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                defaultValue=""
+              >
+                <option value="" disabled>
+                  Select Account Type
+                </option>
+                <option value="0">Admin</option>
+                <option value="1">Approver</option>
+                <option value="2">User</option>
+              </select>
+            </div>
+
             <div className="flex flex-col">
               <label
                 htmlFor="firstName"
@@ -109,27 +168,6 @@ const Modal = ({ isOpen, onClose }) => {
 
             <div className="flex flex-col">
               <label
-                htmlFor="accountType"
-                className="mb-1 text-sm font-medium text-gray-700"
-              >
-                Account Type
-              </label>
-              <select
-                id="accountType"
-                className="w-full border border-gray-300 rounded-md px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                defaultValue=""
-              >
-                <option value="" disabled>
-                  Select Account Type
-                </option>
-                <option value="0">Admin</option>
-                <option value="1">Approver</option>
-                <option value="2">User</option>
-              </select>
-            </div>
-
-            <div className="flex flex-col">
-              <label
                 htmlFor="email"
                 className="mb-1 text-sm font-medium text-gray-700"
               >
@@ -142,12 +180,33 @@ const Modal = ({ isOpen, onClose }) => {
                 className="w-full border border-gray-300 rounded-md px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
+
+            <div className="flex flex-col">
+              <label
+                htmlFor="password"
+                className="mb-1 text-sm font-medium text-gray-700"
+              >
+                Password
+              </label>
+              <input
+                id="password"
+                type="password"
+                placeholder="Enter password"
+                className="w-full border border-gray-300 rounded-md px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
           </div>
         </div>
 
         {/* Action Buttons */}
         <div className="flex flex-row gap-5 w-full mt-8">
-          <button className="w-full text-xl font-medium text-white rounded-lg px-6 py-3 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 transition duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-md">
+          <button
+            onClick={() => {
+              handleSubmit();
+              onClose();
+            }}
+            className="w-full text-xl font-medium text-white rounded-lg px-6 py-3 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 transition duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-md"
+          >
             Save
           </button>
           <button

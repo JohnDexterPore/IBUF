@@ -87,7 +87,7 @@ function Users() {
         </div>
       </div>
 
-      <div className="rounded-2xl overflow-auto shadow-md border border-gray-200">
+      <div className="rounded-2xl overflow-auto shadow-md border border-gray-200  h-11/12">
         <table className="min-w-full">
           <thead className="bg-gray-800 text-white sticky top-0 rounded-2xl">
             <tr>
