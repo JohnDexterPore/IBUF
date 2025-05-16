@@ -1,6 +1,6 @@
 import "../styles/Home.css";
 
-function HomePage() {
+function Inbox() {
 
   return (
     <>
@@ -11,4 +11,4 @@ function HomePage() {
   );
 }
 
-export default HomePage;
+export default Inbox;

@@ -18,7 +18,7 @@ function LoginForm() {
 
   useEffect(() => {
     if (cookies["user"]) {
-      navigate("/Home"); // Navigate to the correct path
+      navigate("/Inbox"); // Navigate to the correct path
     }
     axios
       .get("http://localhost:3001/getCompanies")

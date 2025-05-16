@@ -51,14 +51,13 @@ function NavBar() {
           {/* Company Logo */}
           <div className="flex justify-center items-center ps-2.5 h-1/12">
             {fetchCompanies.map((company, index) => (
-              <>
+              <React.Fragment key={company.company_id || index}>
                 <img
-                  key={index}
                   src={company.logo_address}
                   className="lg:h-13 me-5 h-7"
                   alt={company.company_name}
                 />
-              </>
+              </React.Fragment>
             ))}
           </div>
 

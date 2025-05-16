@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { CookiesProvider } from "react-cookie";
 import Login from "./components/Login";
 import NavBar from "./components/NavBar";
-import Home from "./components/Home";
+import Inbox from "./components/Inbox";
 import Users from "./components/Users";
 import Ongoing from "./components/Ongoing";
 import axios from "axios";
@@ -159,13 +159,13 @@ function AppWrapper() {
       <div className="w-10/12 h-full max-w-full p-10 overflow-hidden">
         <div className="w-full h-full flex gap-10 flex-col">
           <div className="flex items-center justify-between pb-5 h-1/12 border-b-3 border-b-gray-200">
-            <h1 className="text-3xl font-bold">{sentenceCase}</h1>
+            <h1 className="text-3xl font-bold">{"IBUF - " + sentenceCase}</h1>
             <div className="flex gap-2 items-center">{buttons}</div>
           </div>
 
           <div className="rounded-2xl overflow-auto shadow-md border border-gray-200 h-11/12">
             <Routes>
-              <Route path="/home" element={<Home />} />
+              <Route path="/inbox" element={<Inbox />} />
               <Route
                 path="/users"
                 element={
