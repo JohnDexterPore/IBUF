@@ -11,8 +11,8 @@ import axios from "axios";
 function AppWrapper() {
   const location = useLocation();
   const hideNavbarPaths = ["/", "/admin"];
-  const shouldShowNavbar = !hideNavbarPaths.includes(location.pathname);
-  const pathName = window.location.pathname; // e.g., "/dashboard/users"
+  const pathName = location.pathname; // e.g., "/dashboard/users"
+  const shouldShowNavbar = !hideNavbarPaths.includes(pathName);
   const segments = pathName.split("/").filter(Boolean); // removes empty strings
 
   // Join with space and make it sentence case
@@ -171,7 +171,6 @@ function AppWrapper() {
                 element={
                   <Users
                     searchTerm={searchTerm}
-                    setSearchTerm={setSearchTerm}
                     openModal={openModal}
                     runEmailUpdate={runEmailUpdate}
                     updateTrigger={updateTrigger}
