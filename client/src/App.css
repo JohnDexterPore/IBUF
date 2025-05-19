@@ -1,0 +1,40 @@
+.search-container {
+    position: relative;
+  }
+  
+  /* Desktop input styling */
+  .search-input.desktop-input {
+    width: 250px;
+    padding: 8px 12px;
+    font-size: 16px;
+  }
+  
+  /* Mobile button styling */
+  .search-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+  }
+  
+  /* Mobile input styling - absolute and full width overlay */
+  .search-input.mobile-input {
+    position: absolute;
+    top: 40px; /* adjust based on your layout */
+    left: 10px;
+    right: 10px;
+    width: calc(100% - 20px);
+    padding: 8px 12px;
+    font-size: 16px;
+    z-index: 1000;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  /* Optional: add a fade effect for input */
+  .search-input.mobile-input:focus {
+    outline: none;
+    border-color: #007bff;
+  }
