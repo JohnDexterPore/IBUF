@@ -129,8 +129,8 @@ const Modal = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
-      <div className="bg-white rounded-2xl px-12 pt-12 pb-24 w-full md:w-1/2 lg:w-1/3 shadow-2xl gap-10 flex flex-col justify-center items-center border border-gray-200">
+    <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50 overflow-auto h-screen w-screen">
+      <div className="bg-white rounded-2xl px-12 pt-12 pb-12 w-11/12 h-10/12 lg:h-fit md:h-fit overflow-auto md:w-2/3 lg:w-1/3 shadow-2xl gap-10 border border-gray-200">
         <div className="flex flex-col gap-5 w-full">
           <h1 className="text-3xl font-bold text-gray-800 text-center">
             {mode === "edit" ? "Edit User" : "Add User"}

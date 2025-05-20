@@ -338,3 +338,16 @@ app.put("/updateUser", async (req, res) => {
     });
   }
 });
+
+app.get("/getDropdown", async (req, res) => {
+  try {
+    const pool = await getConnection();
+    const result = await pool.request().query(`
+      SELECT * FROM [Item_Buildup].[dbo].[mtbl_dropdown]
+    `);
+    res.json(result.recordset);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Failed to fetch users");
+  }
+});
