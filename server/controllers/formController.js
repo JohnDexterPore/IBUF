@@ -93,10 +93,10 @@ const getItem = async (req, res) => {
     const pool = await getConnection();
     const result = await pool
       .request()
-      .query(`SELECT * FROM tbl_item ${condition}`);
+      .query(`SELECT * FROM tbl_items ${condition}`);
     res.json(result.recordset);
   } catch (err) {
-    handleError(res, "Failed to fetch dropdown", err);
+    handleError(res, "Failed to fetch items", err);
   }
 };
 

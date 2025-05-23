@@ -36,6 +36,6 @@ router.get("/getDropdown", getDropdown);
 
 //Form
 router.post("/addItem", addItem);
-router.get("/ongoing/:search");
+router.get("/ongoing/:search", getItem);
 
 module.exports = router;

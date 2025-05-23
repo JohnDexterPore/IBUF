@@ -16,6 +16,7 @@ function NavBar() {
   // Check authentication on load
   useEffect(() => {
     if (!cookies.user) {
+      console.log("Redirecting because user cookie is missing");
       navigate("/");
     } else {
       axios
@@ -29,6 +30,7 @@ function NavBar() {
         .catch((err) => console.error("Navigation fetch error:", err));
     }
   }, [cookies, navigate]);
+  
 
   const handleSignOut = () => setShowAlert(true);
   const handleProceed = () => {
@@ -85,6 +87,12 @@ function NavBar() {
 
           {/* Navigation Links */}
           <ul className="flex flex-col h-11/12 space-y-2 font-medium pt-5">
+            {cookies.user && cookies.user.FirstName && (
+              <p className="text-center text-xl p-3 mb-10 rounded-lg group transition-colors bg-gray-200 text-blue-700 dark:bg-gray-700 dark:text-white">
+                {cookies.user.FirstName}
+              </p>
+            )}
+
             {navigationItems.map((nav, index) => (
               <li key={index}>
                 <a

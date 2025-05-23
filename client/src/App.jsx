@@ -222,7 +222,13 @@ function AppWrapper() {
               <Route
                 path="/ongoing"
                 element={
-                  <Ongoing showForm={showForm} setShowForm={setShowForm} />
+                  <Ongoing
+                    searchTerm={searchTerm}
+                    updateTrigger={updateTrigger}
+                    setUpdateTrigger={setUpdateTrigger}
+                    showForm={showForm}
+                    setShowForm={setShowForm}
+                  />
                 }
               />
               <Route
