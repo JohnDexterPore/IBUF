@@ -12,6 +12,7 @@ const {
 } = require("../controllers/usersController");
 const { login, updatePasswords } = require("../controllers/authController");
 const { getDropdown } = require("../controllers/dropdownController");
+const { addItem, getItem } = require("../controllers/formController");
 
 // Companies
 router.get("/getCompanies", getCompanies);
@@ -32,5 +33,9 @@ router.get("/updatePasswords", updatePasswords);
 
 // Dropdown
 router.get("/getDropdown", getDropdown);
+
+//Form
+router.post("/addItem", addItem);
+router.get("/ongoing/:search");
 
 module.exports = router;

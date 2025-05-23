@@ -6,6 +6,7 @@ import NavBar from "./components/NavBar";
 import Inbox from "./components/Inbox";
 import Users from "./components/Users";
 import Ongoing from "./components/Ongoing";
+import ViewForm from "./components/ViewForm";
 import axios from "axios";
 import "./App.css";
 import Search from "./components/Search";

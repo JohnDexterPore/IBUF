@@ -1,9 +1,9 @@
 import React from 'react'
 
-function Form() {
+function ViewForm() {
   return (
     <div>Form</div>
   )
 }
 
-export default Form
+export default ViewForm;

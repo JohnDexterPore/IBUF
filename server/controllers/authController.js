@@ -3,8 +3,6 @@ const { handleError } = require("../utils/errorHandler");
 const bcrypt = require("bcrypt");
 const sql = require("mssql");
 
-const now = new Date();
-
 const login = async (req, res) => {
   const { user, password } = req.body;
   try {
