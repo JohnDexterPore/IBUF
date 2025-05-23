@@ -35,9 +35,12 @@ function Users({
 
   const columnNames =
     fetchUsers.length > 0
-      ? Object.keys(fetchUsers[0]).filter(
-          (col) => col.toLowerCase() !== "password"
-        )
+      ? Object.keys(fetchUsers[0])
+          .filter((col) => col.toLowerCase() !== "password")
+          .map((col) => ({
+            key: col,
+            label: col.replace(/_/g, " "),
+          }))
       : [];
 
   const filteredUsers = fetchUsers.filter((user) =>
@@ -66,10 +69,10 @@ function Users({
               </th>
               {columnNames.map((col) => (
                 <th
-                  key={col}
+                  key={col.key}
                   className="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider"
                 >
-                  {col}
+                  {col.label}
                 </th>
               ))}
             </tr>
@@ -116,20 +119,20 @@ function Users({
                       </svg>
                     </button>
                   </td>
-                  {columnNames.map((col) => (
-                    <td key={col} className="px-6 py-4 text-sm text-gray-700">
-                      {col === "AccountType"
-                        ? user[col] === 0
+                  {columnNames.map((col, index) => (
+                    <td key={index} className="px-6 py-4 text-sm text-gray-700">
+                      {col.key === "AccountType"
+                        ? user[col.key] === 0
                           ? "Admin"
-                          : user[col] === 1
+                          : user[col.key] === 1
                           ? "Approver"
-                          : user[col] === 2
+                          : user[col.key] === 2
                           ? "User"
-                          : user[col]
-                        : col.toLowerCase().includes("date") ||
-                          col.toLowerCase().includes("time")
-                        ? formatDateTime(user[col])
-                        : user[col]}
+                          : user[col.key]
+                        : col.key.toLowerCase().includes("date") ||
+                          col.key.toLowerCase().includes("time")
+                        ? formatDateTime(user[col.key])
+                        : user[col.key]}
                     </td>
                   ))}
                 </tr>

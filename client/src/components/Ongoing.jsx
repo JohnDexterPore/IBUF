@@ -20,8 +20,14 @@ function Ongoing({
 
   const columnNames =
     item.length > 0
-      ? Object.keys(item[0]).filter((col) => col.toLowerCase() !== "password")
+      ? Object.keys(item[0])
+          .filter((col) => col.toLowerCase() !== "password" && col.toLowerCase() !== "state")
+          .map((col) => ({
+            key: col,
+            label: col.replace(/_/g, " "),
+          }))
       : [];
+
 
   const filteredItems = item.filter((user) =>
     Object.values(user)
@@ -46,12 +52,12 @@ function Ongoing({
               <th className="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider">
                 Actions
               </th>
-              {columnNames.map((col) => (
+              {columnNames.map((col, index) => (
                 <th
-                  key={col}
+                  key={index}
                   className="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wider"
                 >
-                  {col}
+                  {col.label}
                 </th>
               ))}
             </tr>
@@ -98,20 +104,20 @@ function Ongoing({
                       </svg>
                     </button>
                   </td>
-                  {columnNames.map((col) => (
-                    <td key={col} className="px-6 py-4 text-sm text-gray-700">
-                      {col === "AccountType"
-                        ? user[col] === 0
+                  {columnNames.map((col, index) => (
+                    <td key={index} className="px-6 py-4 text-sm text-gray-700">
+                      {col.key === "AccountType"
+                        ? user[col.key] === 0
                           ? "Admin"
-                          : user[col] === 1
+                          : user[col.key] === 1
                           ? "Approver"
-                          : user[col] === 2
+                          : user[col.key] === 2
                           ? "User"
-                          : user[col]
-                        : col.toLowerCase().includes("date") ||
-                          col.toLowerCase().includes("time")
-                        ? formatDateTime(user[col])
-                        : user[col]}
+                          : user[col.key]
+                        : col.key.toLowerCase().includes("date") ||
+                          col.key.toLowerCase().includes("time")
+                        ? formatDateTime(user[col.key])
+                        : user[col.key]}
                     </td>
                   ))}
                 </tr>
